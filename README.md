@@ -1,6 +1,6 @@
-# NFT Collection Template [Saphire Labs]
+# ERC-721 NFT Collection Template [Saphire Labs]
 
-This project is a decentralized application (DApp) Template for minting NFTs (Non-Fungible Tokens) on the Ethereum blockchain. The application is built using Solidity for the smart contract, Truffle for development and deployment, and React.js for the frontend interface.
+This project is a decentralized application (DApp) template for minting NFTs (Non-Fungible Tokens) on the Ethereum blockchain. The application is built using Solidity for the smart contract, Truffle for development and deployment, and React.js for the frontend interface. This template provides a starting point for developers to create their own NFT collection DApp.
 
 ## Table of Contents
 
@@ -11,7 +11,12 @@ This project is a decentralized application (DApp) Template for minting NFTs (No
 - [Deploying Contracts](#deploying-contracts)
 - [Running the Frontend](#running-the-frontend)
 - [Testing the Contracts](#testing-the-contracts)
+- [Setting Up Ganache and MetaMask](#setting-up-ganache-and-metamask)
 - [Interacting with the DApp](#interacting-with-the-dapp)
+- [Customizing the Smart Contract](#customizing-the-smart-contract)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
+- [Contact](#contact)
 
 ## Prerequisites
 
@@ -175,11 +180,165 @@ You also need a MetaMask wallet or any other Ethereum wallet to interact with th
 
 ## Testing the Contracts
 
+The project includes a suite of tests to ensure that the smart contracts function as expected. These tests are written using the Truffle framework and are located in the `test` directory.
+
 1. **Run the smart contract tests:**
 
    ```bash
    truffle test
    ```
+
+2. **Understanding the Tests:**
+
+   - **Minting Tokens:**
+     The tests verify that tokens can be minted correctly, starting from token ID 1.
+
+     ```javascript
+     it("should mint a new token starting from ID 1", async () => {
+     	const instance = await NFTCollection.deployed();
+     	const initialBalance = await instance.balanceOf(accounts[0]);
+
+     	await instance.mint(1, {
+     		from: accounts[0],
+     		value: web3.utils.toWei("0.05", "ether"),
+     	});
+
+     	const finalBalance = await instance.balanceOf(accounts[0]);
+     	assert.equal(
+     		finalBalance.toNumber(),
+     		initialBalance.toNumber() + 1,
+     		"Balance should increase by 1"
+     	);
+
+     	const tokenId = await instance.tokenOfOwnerByIndex(accounts[0], 0);
+     	assert.equal(tokenId.toNumber(), 1, "Token ID should be 1");
+     });
+     ```
+
+   - **Exceeding Maximum Supply:**
+     The tests ensure that the total supply of tokens does not exceed the maximum limit.
+
+     ```javascript
+     it("should not exceed MAX_SUPPLY", async () => {
+     	const instance = await NFTCollection.deployed();
+     	let exceeded = false;
+
+     	try {
+     		await instance.mint(10001, {
+     			from: accounts[0],
+     			value: web3.utils.toWei("500.05", "ether"),
+     		});
+     	} catch (e) {
+     		exceeded = true;
+     	}
+
+     	assert.equal(
+     		exceeded,
+     		true,
+     		"Should not be able to mint more than MAX_SUPPLY"
+     	);
+     });
+     ```
+
+   - **Withdraw Funds:**
+     The tests confirm that the contract owner can withdraw funds from the contract.
+
+     ```javascript
+     it("should allow the owner to withdraw funds", async () => {
+     	const instance = await NFTCollection.deployed();
+     	const initialOwnerBalance = web3.utils.toBN(
+     		await web3.eth.getBalance(accounts[0])
+     	);
+
+     	await instance.withdraw({ from: accounts[0] });
+
+     	const finalOwnerBalance = web3.utils.toBN(
+     		await web3.eth.getBalance(accounts[0])
+     	);
+     	assert(
+     		finalOwnerBalance.gt(initialOwnerBalance),
+     		"Owner balance should increase after withdraw"
+     	);
+     });
+     ```
+
+   - **Limit Per User:**
+     The tests ensure that a user cannot mint more than the allowed number of tokens.
+
+     ```javascript
+     it("should not allow more than 5 tokens per user", async () => {
+     	const instance = await NFTCollection.deployed();
+     	let exceeded = false;
+
+     	try {
+     		await instance.mint(6, {
+     			from: accounts[1],
+     			value: web3.utils.toWei("0.3", "ether"),
+     		});
+     	} catch (e) {
+     		exceeded = true;
+     	}
+
+     	assert.equal(
+     		exceeded,
+     		true,
+     		"Should not be able to mint more than 5 tokens per user"
+     	);
+     });
+
+     it("should allow up to 5 tokens per user", async () => {
+     	const instance = await NFTCollection.deployed();
+     	const initialBalance = await instance.balanceOf(accounts[2]);
+
+     	await instance.mint(5, {
+     		from: accounts[2],
+     		value: web3.utils.toWei("0.25", "ether"),
+     	});
+
+     	const finalBalance = await instance.balanceOf(accounts[2]);
+     	assert.equal(
+     		finalBalance.toNumber(),
+     		initialBalance.toNumber() + 5,
+     		"Balance should increase by 5"
+     	);
+     });
+     ```
+
+These tests help ensure the robustness and correctness of the smart contract. It's important to run the tests after making any changes to the contract to verify that everything works as expected.
+
+## Setting Up Ganache and MetaMask
+
+1. **Download and Install Ganache:**
+
+   - [Ganache](https://www.trufflesuite.com/ganache) is a personal blockchain for Ethereum development. Download and install Ganache from the Truffle Suite website.
+
+2. **Start Ganache:**
+
+   - Open the Ganache app.
+   - Click on "Quickstart Ethereum" to create a new workspace.
+   - Note the RPC server address (usually `http://127.0.0.1:7545`).
+
+3. **Configure MetaMask:**
+
+   - Install the [MetaMask](https://metamask.io/) browser extension.
+   - Open MetaMask and click on the network dropdown at the top.
+   - Select "Custom RPC".
+   - Enter the following details:
+     - Network Name: Ganache
+     - New RPC URL: `http://127.0.0.1:7545`
+     - Chain ID: 1337 (Ganache default)
+     - Currency Symbol: ETH
+     - Block Explorer URL: (leave blank)
+   - Click "Save".
+
+4. **Import Accounts to MetaMask:**
+
+   - In Ganache, click on the key icon next to an account to view the private key.
+   - Copy the private key.
+   - In MetaMask, click on the account icon, then "Import Account".
+   - Paste the private key and click "Import".
+
+You are now connected to your local Ganache blockchain with MetaMask. You can interact with your DApp using the accounts provided by Ganache.
 
 ## Interacting with the DApp
 
@@ -197,6 +356,65 @@ You also need a MetaMask wallet or any other Ethereum wallet to interact with th
 
    - The total supply of minted NFTs will be displayed on the main page.
 
+## Customizing the Smart Contract
+
+The `NFTCollection.sol` smart contract contains several variables that you can customize to suit your specific needs:
+
+1. **MAX_SUPPLY**:
+
+   - The maximum number of NFTs that can be minted.
+   - Default value: `10000`.
+   - Example: To set the maximum supply to 5000, change:
+     ```solidity
+     uint256 public constant MAX_SUPPLY = 10000;
+     ```
+     to
+     ```solidity
+     uint256 public constant MAX_SUPPLY = 5000;
+     ```
+
+2. **PRICE**:
+
+   - The price of each NFT in ether.
+   - Default value: `0.05 ether`.
+   - Example: To set the price to 0.1 ether, change:
+     ```solidity
+     uint256 public constant PRICE = 0.05 ether;
+     ```
+     to
+     ```solidity
+     uint256 public constant PRICE = 0.1 ether;
+     ```
+
+3. **MAX_MINT_PER_USER**:
+
+   - The maximum number of NFTs a single user can mint.
+   - Default value: `5`.
+   - Example: To set the maximum mint per user to 10, change:
+     ```solidity
+     uint256 public constant MAX_MINT_PER_USER = 5;
+     ```
+     to
+     ```solidity
+     uint256 public constant MAX_MINT_PER_USER = 10;
+     ```
+
+4. **Base URI**:
+
+   - The base URI for the NFT metadata.
+   - This can be set in the constructor when deploying the contract.
+   - Example:
+
+     ```javascript
+     const NFTCollection = artifacts.require("NFTCollection");
+
+     module.exports = function (deployer) {
+     	deployer.deploy(NFTCollection, "https://base-url.com");
+     };
+     ```
+
+By customizing these variables, you can tailor the smart contract to meet the specific requirements of your NFT collection project.
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
@@ -207,7 +425,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - [Truffle](https://www.trufflesuite.com/) for the development framework.
 - [MetaMask](https://metamask.io/) for the Ethereum wallet.
 - [Infura](https://infura.io/) for the Ethereum API.
+- [Web3](https://web3js.org/) for Web3.js their libraries.
 
 ## Contact
 
-For any questions or inquiries, please contact info@saphirelabs.com.
+For any questions or inquiries, please contact info@saphirelabs.com or steve@saphirelabs.com.
