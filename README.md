@@ -2,6 +2,8 @@
 
 This project is a decentralized application (DApp) template for minting NFTs (Non-Fungible Tokens) on the Ethereum blockchain. The application is built using Solidity for the smart contract, Truffle for development and deployment, and React.js for the frontend interface. This template provides a starting point for developers to create their own NFT collection DApp.
 
+![Choice Cover](./images/mint.png)
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
@@ -14,6 +16,7 @@ This project is a decentralized application (DApp) template for minting NFTs (No
 - [Setting Up Ganache and MetaMask](#setting-up-ganache-and-metamask)
 - [Interacting with the DApp](#interacting-with-the-dapp)
 - [Customizing the Smart Contract](#customizing-the-smart-contract)
+- [Frontend Configuration](#frontend-configuration)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
 - [Contact](#contact)
@@ -73,7 +76,7 @@ You also need a MetaMask wallet or any other Ethereum wallet to interact with th
    	networks: {
    		development: {
    			host: "127.0.0.1",
-   			port: 7545,
+   			port: 8545,
    			network_id: "*",
    		},
    		mainnet: {
@@ -293,7 +296,10 @@ The project includes a suite of tests to ensure that the smart contracts functio
      	await instance.mint(5, {
      		from: accounts[2],
      		value: web3.utils.toWei("0.25", "ether"),
-     	});
+
+     ```
+
+});
 
      	const finalBalance = await instance.balanceOf(accounts[2]);
      	assert.equal(
@@ -349,7 +355,7 @@ You are now connected to your local Ganache blockchain with MetaMask. You can in
 
 2. **Mint NFT:**
 
-   - Once connected, you can mint an NFT by clicking the "Mint 1 Token" button.
+   - Once connected, you can mint an NFT by clicking the "Mint" button.
    - Ensure you have sufficient ETH in your wallet to cover the minting fee.
 
 3. **Check Total Supply:**
@@ -415,6 +421,76 @@ The `NFTCollection.sol` smart contract contains several variables that you can c
 
 By customizing these variables, you can tailor the smart contract to meet the specific requirements of your NFT collection project.
 
+## Frontend Configuration
+
+The frontend is built using React.js and utilizes RainbowKit for wallet connection and ethers.js for interacting with the Ethereum blockchain. Here are the steps to configure and run the frontend:
+
+![Choice Cover](./images/connect_wallet.png)
+
+1. **Install React dependencies:**
+
+   Ensure you have installed all necessary dependencies in the `client` directory:
+
+   ```bash
+   cd client
+   npm install
+   ```
+
+2. **Set up RainbowKit and ethers.js:**
+
+   Note by RainbowKit: Every dApp that relies on WalletConnect now needs to obtain a projectId from [WalletConnect Cloud](https://cloud.walletconnect.com/). This is absolutely free and only takes a few minutes.
+
+   In your `index.js`, configure RainbowKit and ethers.js as follows:
+
+   ```javascript
+   // src/index.js
+   import React from "react";
+   import ReactDOM from "react-dom/client";
+   import App from "./App";
+
+   import "@rainbow-me/rainbowkit/styles.css";
+   import {
+   	getDefaultConfig,
+   	RainbowKitProvider,
+   } from "@rainbow-me/rainbowkit";
+   import { WagmiConfig } from "wagmi";
+   import { mainnet } from "wagmi/chains";
+   import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+
+   const config = getDefaultConfig({
+   	appName: "Test App",
+   	projectId: "your_project_id", // Add your RainbowKit project ID here
+   	chains: [mainnet],
+   	ssr: false, // If your dApp uses server side rendering (SSR)
+   });
+
+   const queryClient = new QueryClient();
+
+   const root = ReactDOM.createRoot(document.getElementById("root"));
+   root.render(
+   	<React.StrictMode>
+   		<WagmiConfig config={config}>
+   			<QueryClientProvider client={queryClient}>
+   				<RainbowKitProvider coolMode>
+   					<App />
+   				</RainbowKitProvider>
+   			</QueryClientProvider>
+   		</WagmiConfig>
+   	</React.StrictMode>
+   );
+   ```
+
+3. **Running the Frontend:**
+
+   Start the React development server:
+
+   ```bash
+   cd client
+   npm start
+   ```
+
+   Open your browser and navigate to `http://localhost:3000` to interact with the DApp.
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
@@ -425,7 +501,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - [Truffle](https://www.trufflesuite.com/) for the development framework.
 - [MetaMask](https://metamask.io/) for the Ethereum wallet.
 - [Infura](https://infura.io/) for the Ethereum API.
-- [Web3](https://web3js.org/) for Web3.js their libraries.
+- [RainbowKit](https://www.rainbowkit.com/) for the best way to connect a wallet.
+- [Wagmi](https://wagmi.sh/) for reactivity for Ethereum apps.
+- [Ethers](https://ethers.org/) for Javascript library for all our Ethereum needs.
 
 ## Contact
 
