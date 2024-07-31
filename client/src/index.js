@@ -3,7 +3,11 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 
 import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+	getDefaultConfig,
+	lightTheme,
+	RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { mainnet, localhost } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
@@ -39,7 +43,7 @@ const config = getDefaultConfig({
 
 const config = getDefaultConfig({
 	appName: "Test App",
-	projectId: "your_project_id",
+	projectId: "project_id",
 	chains: [mainnet, localhost],
 	ssr: false, // If your dApp uses server side rendering (SSR)
 });

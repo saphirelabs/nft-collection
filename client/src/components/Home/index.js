@@ -96,7 +96,7 @@ const Home = () => {
 							value={numberOfTokens}
 							onChange={(e) => setNumberOfTokens(Number(e.target.value))}
 						/>
-						<Button onClick={handleMint}>Mint</Button>
+						<Button onClick={handleMint}>Mint Tokens</Button>
 						{message && <Message>{message}</Message>}
 					</>
 				) : (

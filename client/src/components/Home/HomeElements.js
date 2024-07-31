@@ -29,9 +29,9 @@ export const Card = styled.div`
 
 export const Input = styled.input`
 	width: 100%;
-	padding: 0.5rem;
+	padding: 0.75rem;
 	margin: 1rem 0;
-	border-radius: 5px;
+	border-radius: 12px;
 	border: 1px solid #ccc;
 `;
 

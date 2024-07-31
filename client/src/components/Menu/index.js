@@ -1,28 +1,28 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { NavMenu } from "./MenuElements";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const Menu = () => {
 	return (
-		<nav style={styles.nav}>
+		<NavMenu>
 			{/* <Link to="/" style={styles.link}>
 				Home
 			</Link> */}
-			<ConnectButton chainStatus="icon" />
+			<ConnectButton
+				chainStatus="none"
+				accountStatus={{
+					smallScreen: "avatar",
+					largeScreen: "full",
+				}}
+				showBalance={{
+					smallScreen: false,
+					largeScreen: true,
+				}}
+			/>
 			{/* Add more links as needed */}
-		</nav>
+		</NavMenu>
 	);
-};
-
-const styles = {
-	nav: {
-		display: "flex",
-		gap: "10px",
-	},
-	link: {
-		textDecoration: "none",
-		color: "black",
-	},
 };
 
 export default Menu;
